@@ -14,7 +14,7 @@ class MicRecorder {
       startRecordingAt: 300,
       deviceId: null,
     };
-
+    this.sourceNode = null
     this.activeStream = null;
     this.context = null;
     this.microphone = null;
@@ -28,8 +28,37 @@ class MicRecorder {
    * Starts to listen for the microphone sound
    * @param {MediaStream} stream
    */
-  addMicrophoneListener(stream) {
-    this.activeStream = stream;
+  // addMicrophoneListener(stream) {
+  //   this.activeStream = stream;
+
+  //   // This prevents the weird noise once you start listening to the microphone
+  //   this.timerToStart = setTimeout(() => {
+  //     delete this.timerToStart;
+  //   }, this.config.startRecordingAt);
+
+  //   // Set up Web Audio API to process data from the media stream (microphone).
+  //   this.microphone = this.context.createMediaStreamSource(stream);
+
+  //   // Settings a bufferSize of 0 instructs the browser to choose the best bufferSize
+  //   this.processor = this.context.createScriptProcessor(0, 1, 1);
+
+  //   // Add all buffers from LAME into an array.
+  //   this.processor.onaudioprocess = (event) => {
+  //     if (this.timerToStart) {
+  //       return;
+  //     }
+
+  //     // Send microphone data to LAME for MP3 encoding while recording.
+  //     this.lameEncoder.encode(event.inputBuffer.getChannelData(0));
+  //   };
+
+  //   // Begin retrieving microphone data.
+  //   this.microphone.connect(this.processor);
+  //   this.processor.connect(this.context.destination);
+  // };
+
+  addMicrophoneListener() {
+    // this.activeStream = stream;
 
     // This prevents the weird noise once you start listening to the microphone
     this.timerToStart = setTimeout(() => {
@@ -37,7 +66,7 @@ class MicRecorder {
     }, this.config.startRecordingAt);
 
     // Set up Web Audio API to process data from the media stream (microphone).
-    this.microphone = this.context.createMediaStreamSource(stream);
+    // this.microphone = this.context.createMediaStreamSource(stream);
 
     // Settings a bufferSize of 0 instructs the browser to choose the best bufferSize
     this.processor = this.context.createScriptProcessor(0, 1, 1);
@@ -53,10 +82,10 @@ class MicRecorder {
     };
 
     // Begin retrieving microphone data.
-    this.microphone.connect(this.processor);
+    this.sourceNode.connect(this.processor)
+    // this.microphone.connect(this.processor);
     this.processor.connect(this.context.destination);
   };
-
   /**
    * Disconnect microphone, processor and remove activeStream
    */
@@ -91,16 +120,19 @@ class MicRecorder {
     this.config.sampleRate = this.context.sampleRate;
     this.lameEncoder = new Encoder(this.config);
 
-    const audio = this.config.deviceId ? { deviceId: { exact: this.config.deviceId } } : true;
+    // const audio = this.config.deviceId ? { deviceId: { exact: this.config.deviceId } } : true;
 
     return new Promise((resolve, reject) => {
-      navigator.mediaDevices.getUserMedia({ audio })
-        .then(stream => {
-          this.addMicrophoneListener(stream);
-          resolve(stream);
-        }).catch(function(err) {
-          reject(err);
-        });
+      this.addMicrophoneListener();
+      resolve()
+
+      // navigator.mediaDevices.getUserMedia({ audio })
+      //   .then(stream => {
+      // this.addMicrophoneListener(stream);
+      //     resolve(stream);
+      //   }).catch(function(err) {
+      //     reject(err);
+      //   });
     })
   };
 

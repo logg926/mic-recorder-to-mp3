@@ -1,6 +1,6 @@
 # Microphone Recorder to Mp3
 
-Record your microphone audio input and get an ```audio/mp3``` file in the end.
+Record your microphone audio input and get an `audio/mp3` file in the end.
 
 # Install
 
@@ -39,38 +39,43 @@ npm run build
 # How to use
 
 ```js
-const MicRecorder = require('mic-recorder-to-mp3');
+const MicRecorder = require("mic-recorder-to-mp3");
 
 // New instance
 const recorder = new MicRecorder({
-  bitRate: 128
+  bitRate: 128,
+  sourceNode: YOUR_AUDIO_SOURCE_NODE,
 });
 
 // Start recording. Browser will request permission to use your microphone.
-recorder.start().then(() => {
-  // something else
-}).catch((e) => {
-  console.error(e);
-});
+recorder
+  .start()
+  .then(() => {
+    // something else
+  })
+  .catch((e) => {
+    console.error(e);
+  });
 
 // Once you are done singing your best song, stop and get the mp3.
 recorder
-.stop()
-.getMp3().then(([buffer, blob]) => {
-  // do what ever you want with buffer and blob
-  // Example: Create a mp3 file and play
-  const file = new File(buffer, 'me-at-thevoice.mp3', {
-    type: blob.type,
-    lastModified: Date.now()
+  .stop()
+  .getMp3()
+  .then(([buffer, blob]) => {
+    // do what ever you want with buffer and blob
+    // Example: Create a mp3 file and play
+    const file = new File(buffer, "me-at-thevoice.mp3", {
+      type: blob.type,
+      lastModified: Date.now(),
+    });
+
+    const player = new Audio(URL.createObjectURL(file));
+    player.play();
+  })
+  .catch((e) => {
+    alert("We could not retrieve your message");
+    console.log(e);
   });
-
-  const player = new Audio(URL.createObjectURL(file));
-  player.play();
-
-}).catch((e) => {
-  alert('We could not retrieve your message');
-  console.log(e);
-});
 ```
 
 - Check the [samples](https://github.com/closeio/mic-recorder-to-mp3/tree/master/samples) folder for more examples.
