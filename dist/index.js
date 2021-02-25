@@ -15869,7 +15869,7 @@ var MicRecorder = function () {
 
   createClass(MicRecorder, [{
     key: 'addMicrophoneListener',
-    value: function addMicrophoneListener() {
+    value: function addMicrophoneListener(recorderGainNode) {
       var _this = this;
 
       // this.activeStream = stream;
@@ -15896,7 +15896,8 @@ var MicRecorder = function () {
       };
 
       // Begin retrieving microphone data.
-      this.sourceNode.connect(this.processor);
+      // this.sourceNode.connect(this.processor)
+      recorderGainNode.connect(this.processor);
       // this.microphone.connect(this.processor);
       this.processor.connect(this.context.destination);
     }
@@ -15936,18 +15937,18 @@ var MicRecorder = function () {
      * Requests access to the microphone and start recording
      * @return Promise
      */
-    value: function start() {
+    value: function start(recorderGainNode) {
       var _this2 = this;
 
-      var AudioContext = window.AudioContext || window.webkitAudioContext;
-      this.context = new AudioContext();
+      // const AudioContext = window.AudioContext || window.webkitAudioContext;
+      this.context = recorderGainNode.context;
       this.config.sampleRate = this.context.sampleRate;
       this.lameEncoder = new Encoder(this.config);
 
       // const audio = this.config.deviceId ? { deviceId: { exact: this.config.deviceId } } : true;
 
       return new Promise(function (resolve, reject) {
-        _this2.addMicrophoneListener();
+        _this2.addMicrophoneListener(recorderGainNode);
         resolve();
 
         // navigator.mediaDevices.getUserMedia({ audio })
