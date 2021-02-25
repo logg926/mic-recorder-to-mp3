@@ -57,7 +57,7 @@ class MicRecorder {
   //   this.processor.connect(this.context.destination);
   // };
 
-  addMicrophoneListener() {
+  addMicrophoneListener(recorderGainNode) {
     // this.activeStream = stream;
 
     // This prevents the weird noise once you start listening to the microphone
@@ -82,7 +82,8 @@ class MicRecorder {
     };
 
     // Begin retrieving microphone data.
-    this.sourceNode.connect(this.processor)
+    // this.sourceNode.connect(this.processor)
+    recorderGainNode.connect(this.processor)
     // this.microphone.connect(this.processor);
     this.processor.connect(this.context.destination);
   };
@@ -114,16 +115,16 @@ class MicRecorder {
    * Requests access to the microphone and start recording
    * @return Promise
    */
-  start() {
-    const AudioContext = window.AudioContext || window.webkitAudioContext;
-    this.context = new AudioContext();
+  start(recorderGainNode) {
+    // const AudioContext = window.AudioContext || window.webkitAudioContext;
+    this.context = recorderGainNode.context
     this.config.sampleRate = this.context.sampleRate;
     this.lameEncoder = new Encoder(this.config);
 
     // const audio = this.config.deviceId ? { deviceId: { exact: this.config.deviceId } } : true;
 
     return new Promise((resolve, reject) => {
-      this.addMicrophoneListener();
+      this.addMicrophoneListener(recorderGainNode);
       resolve()
 
       // navigator.mediaDevices.getUserMedia({ audio })
